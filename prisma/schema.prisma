@@ -14,18 +14,82 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Gender {
-  MALE
-  FEMALE
-  NON_BINARY
+model School {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  grades    Grade[]
+  createdAt DateTime @default(now())
 }
 
-model User {
-  id         String  @id @default(nanoid())
-  firstName  String
-  lastName   String
-  balance    Float?
-  gender     Gender?
-  age        Int?
-  isVerified Boolean @default(false)
+model Grade {
+  id       String  @id @default(uuid())
+  number   Int // 1 to 12
+  groups   Group[]
+  schoolId String
+  school   School  @relation(fields: [schoolId], references: [id])
+}
+
+model Group {
+  id       String    @id @default(uuid())
+  name     String // a, b, c, d, e
+  gradeId  String
+  grade    Grade     @relation(fields: [gradeId], references: [id])
+  teachers Teacher[]
+  students Student[]
+}
+
+model Teacher {
+  id        String    @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String    @unique
+  password  String
+  groupId   String
+  group     Group     @relation(fields: [groupId], references: [id])
+  students  Student[]
+}
+
+model Student {
+  id              String       @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String       @unique
+  phoneNumber     String
+  emergencyNumber String
+  teacherId       String
+  teacher         Teacher      @relation(fields: [teacherId], references: [id])
+  groupId         String
+  group           Group        @relation(fields: [groupId], references: [id])
+  parent          Parent?      @relation(fields: [parentId], references: [id])
+  parentId        String?
+  attendance      Attendance[]
+  scores          Score[]
+}
+
+model Parent {
+  id        String    @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String    @unique
+  password  String
+  students  Student[]
+}
+
+model Attendance {
+  id        String   @id @default(uuid())
+  date      DateTime
+  present   Boolean
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
+}
+
+model Score {
+  id         String  @id @default(uuid())
+  exam       Float
+  active     Float
+  attendance Float
+  midterm    Float
+  studentId  String
+  student    Student @relation(fields: [studentId], references: [id])
 }

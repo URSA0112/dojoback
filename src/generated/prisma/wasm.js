@@ -120,14 +120,68 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.UserScalarFieldEnum = {
+exports.Prisma.SchoolScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.GradeScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  schoolId: 'schoolId'
+};
+
+exports.Prisma.GroupScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  gradeId: 'gradeId'
+};
+
+exports.Prisma.TeacherScalarFieldEnum = {
   id: 'id',
   firstName: 'firstName',
   lastName: 'lastName',
-  balance: 'balance',
-  gender: 'gender',
-  age: 'age',
-  isVerified: 'isVerified'
+  email: 'email',
+  password: 'password',
+  groupId: 'groupId'
+};
+
+exports.Prisma.StudentScalarFieldEnum = {
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  phoneNumber: 'phoneNumber',
+  emergencyNumber: 'emergencyNumber',
+  teacherId: 'teacherId',
+  groupId: 'groupId',
+  parentId: 'parentId'
+};
+
+exports.Prisma.ParentScalarFieldEnum = {
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  password: 'password'
+};
+
+exports.Prisma.AttendanceScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  present: 'present',
+  studentId: 'studentId'
+};
+
+exports.Prisma.ScoreScalarFieldEnum = {
+  id: 'id',
+  exam: 'exam',
+  active: 'active',
+  attendance: 'attendance',
+  midterm: 'midterm',
+  studentId: 'studentId'
 };
 
 exports.Prisma.SortOrder = {
@@ -144,14 +198,17 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.Gender = exports.$Enums.Gender = {
-  MALE: 'MALE',
-  FEMALE: 'FEMALE',
-  NON_BINARY: 'NON_BINARY'
-};
+
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  School: 'School',
+  Grade: 'Grade',
+  Group: 'Group',
+  Teacher: 'Teacher',
+  Student: 'Student',
+  Parent: 'Parent',
+  Attendance: 'Attendance',
+  Score: 'Score'
 };
 
 /**
