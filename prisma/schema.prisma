@@ -1,12 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// 🧩 Энэ файл нь Prisma-ийн schema — өгөгдлийн сангийн хүснэгт, талбар, холбоо зэргийг энд тодорхойлдог
+// 🛠 Schema-г өөрчилсний дараа `npx prisma migrate dev` эсвэл `npx prisma db push` командыг ашиглана !!!
+// 🚀 Дараа нь backend API эсвэл service(src/controllers , src/routes ...) файлуудаа бичиж өгөгдөлтэй ажиллана 
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
