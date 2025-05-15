@@ -2,20 +2,20 @@ import express from "express";
 import { Request, Response } from "express";
 import prisma from "../prisma/client";
 
-export const addStudent = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const teacherId = req.body.teacherId;
+export const addStudent = async (req: Request,res: Response)=> {
+  const student = req.body.studentId;
   const { firstName, lastName, email, phoneNumber, emergencyNumber } = req.body;
 
+// ⚠️ Сурагчийн ID-г өөрөө өгөхгүй — шинэ сурагч бүрт Prisma автоматаар шинэ ID үүсгэнэ
+ // 🤔 Төсөөл дөө, хамгийн анхны сурагч нэмэх гэж байхад — ямар ID-г нь хаанаас олох юм бэ?
+
   try {
-    const teacher = await prisma.teacher.findUnique({
-      where: { id: teacherId },
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
     });
 
-    if (!teacher) {
-      res.status(404).json({ error: "Teacher not found" });
+    if (!student) {
+      res.status(404).json({ error: "student not found" });
       return;
     }
 
@@ -26,8 +26,8 @@ export const addStudent = async (
         email,
         phoneNumber,
         emergencyNumber,
-        teacherId: teacher.id,
-        groupId: teacher.groupId,
+        studentId: student.id,
+        groupId: student.groupId,
       },
     });
 
@@ -38,28 +38,28 @@ export const addStudent = async (
   }
 };
 
-export const getTeacherWithStudents = async (
+export const getstudentWithStudents = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { teacherId } = req.params;
+  const { studentId } = req.params;
 
   try {
-    const teacher = await prisma.teacher.findUnique({
-      where: { id: teacherId },
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
       include: {
         students: true,
       },
     });
 
-    if (!teacher) {
-      res.status(404).json({ error: "Teacher not found" });
+    if (!student) {
+      res.status(404).json({ error: "student not found" });
       return;
     }
 
-    res.status(200).json(teacher);
+    res.status(200).json(student);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to fetch teacher and students" });
+    res.status(500).json({ error: "Failed to fetch student and students" });
   }
 };

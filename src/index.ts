@@ -8,8 +8,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/v1/teacher", studentRoutes);
+app.use("/api/v1/student", studentRoutes);
 app.use("/api/v1/auth", authRoutes);
+
 
 //Энэ бол сервер ажиллаж байгаа эсэхийг шалгах тест 
 app.get("/", (req: Request, res: Response) => {

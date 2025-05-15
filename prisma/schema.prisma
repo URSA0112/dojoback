@@ -4,6 +4,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "./node_modules/@prisma/client"
 }
 
 datasource db {
@@ -16,6 +17,22 @@ enum UserRole {
   student
   parent
   admin
+}
+
+//Class = Анги , Group = Бүлэг
+enum Class {
+  one
+  two
+  three
+  four
+  five
+  six
+  seven
+  eight
+  nine
+  ten
+  eleven
+  twelve
 }
 
 model User {
@@ -48,32 +65,32 @@ model Group {
   name     String // a, b, c, d, e
   gradeId  String
   grade    Grade     @relation(fields: [gradeId], references: [id])
-  teachers Teacher[]
   students Student[]
 }
 
 model Teacher {
-  id        String    @id @default(uuid())
-  firstName String
-  lastName  String
-  email     String    @unique
-  password  String
-  groupId   String
-  group     Group     @relation(fields: [groupId], references: [id])
-  students  Student[]
+  id              String  @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String  @unique
+  password        String  @default("teacher1234")
+  class           Class?
+  group           String?
+  groupId         String?
+  phoneNumber     String?
+  emergencyNumber String?
 }
 
 model Student {
   id              String       @id @default(uuid())
   firstName       String
   lastName        String
-  email           String       @unique
-  phoneNumber     String
-  emergencyNumber String
-  teacherId       String
-  teacher         Teacher      @relation(fields: [teacherId], references: [id])
+  email           String?      @unique
+  phoneNumber     String?
+  emergencyNumber String?
+  teacherId       String?
   groupId         String
-  group           Group        @relation(fields: [groupId], references: [id])
+  group           Group?       @relation(fields: [groupId], references: [id])
   parent          Parent?      @relation(fields: [parentId], references: [id])
   parentId        String?
   attendance      Attendance[]
