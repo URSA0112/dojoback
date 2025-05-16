@@ -4,7 +4,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "./node_modules/@prisma/client"
 }
 
 datasource db {
@@ -19,21 +18,21 @@ enum UserRole {
   admin
 }
 
-//Class = Анги , Group = Бүлэг
-enum Class {
-  one
-  two
-  three
-  four
-  five
-  six
-  seven
-  eight
-  nine
-  ten
-  eleven
-  twelve
-}
+// //Class = Анги , Group = Бүлэг
+// enum Class {
+//   one
+//   two
+//   three
+//   four
+//   five
+//   six
+//   seven
+//   eight
+//   nine
+//   ten
+//   eleven
+//   twelve
+// }
 
 model User {
   id        String   @id @default(cuid())
@@ -53,11 +52,12 @@ model School {
 }
 
 model Grade {
-  id       String  @id @default(uuid())
+  id       String    @id @default(uuid())
   number   Int // 1 to 12
   groups   Group[]
   schoolId String
-  school   School  @relation(fields: [schoolId], references: [id])
+  school   School    @relation(fields: [schoolId], references: [id])
+  Teacher  Teacher[]
 }
 
 model Group {
@@ -66,17 +66,22 @@ model Group {
   gradeId  String
   grade    Grade     @relation(fields: [gradeId], references: [id])
   students Student[]
+  Teacher  Teacher[]
 }
 
 model Teacher {
-  id              String  @id @default(uuid())
-  firstName       String
-  lastName        String
-  email           String  @unique
-  password        String  @default("teacher1234")
-  class           Class?
-  group           String?
-  groupId         String?
+  id        String @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String @unique
+  password  String @default("teacher1234")
+
+  gradeId String?
+  grade   Grade?  @relation(fields: [gradeId], references: [id])
+
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id])
+
   phoneNumber     String?
   emergencyNumber String?
 }
