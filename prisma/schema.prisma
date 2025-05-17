@@ -4,7 +4,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "./node_modules/@prisma/client"
 }
 
 datasource db {
@@ -19,8 +18,8 @@ enum UserRole {
   admin
 }
 
-//Class = Анги , Group = Бүлэг
-enum Class {
+//Grade = Анги , Group = Бүлэг
+enum GradeType {
   one
   two
   three
@@ -69,12 +68,13 @@ model Group {
 }
 
 model Teacher {
-  id              String  @id @default(uuid())
+  id              String   @id @default(uuid())
   firstName       String
   lastName        String
-  email           String  @unique
-  password        String  @default("teacher1234")
-  class           Class?
+  email           String   @unique
+  password        String?  @default("teacher1234")
+  subject         String[]
+  grade           String?
   group           String?
   groupId         String?
   phoneNumber     String?

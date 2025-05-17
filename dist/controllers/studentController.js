@@ -15,37 +15,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getstudentWithStudents = exports.addStudent = void 0;
 const client_1 = __importDefault(require("../prisma/client"));
 const addStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // shin suragch shineer nemehed ID gaar haih bolomjgui shuude. nemsnii daraa automataar uusne.
-    // const student = req.body.student;
+    const student = req.body.studentId;
     const { firstName, lastName, email, phoneNumber, emergencyNumber } = req.body;
-    // try {
-    //   const student = await prisma.student.findUnique({
-    //     where: { id: studentId },
-    //   });
-    //   if (!student) {
-    //     res.status(404).json({ error: "student not found" });
-    //     return;
-    //   }
-    const student = yield client_1.default.student.create({
-        data: {
-            firstName,
-            lastName,
-            email,
-            phoneNumber,
-            emergencyNumber,
-            // studentId: student.id,
-            // groupId: student.groupId,
-        },
-    });
-    res.status(201).json(student);
+    // ⚠️ Сурагчийн ID-г өөрөө өгөхгүй — шинэ сурагч бүрт Prisma автоматаар шинэ ID үүсгэнэ
+    // // 🤔 Төсөөл дөө, хамгийнанхны сурагч нэмэх гэж байхад — ямар ID-г нь хаанаас олох юм бэ?
+    try {
+        const student = yield client_1.default.student.findUnique({
+            where: { id: studentId },
+        });
+        if (!student) {
+            res.status(404).json({ error: "student not found" });
+            return;
+        }
+        const student = yield client_1.default.student.create({
+            data: {
+                firstName,
+                lastName,
+                email,
+                phoneNumber,
+                emergencyNumber,
+                studentId: student.id,
+                groupId: student.groupId,
+            },
+        });
+        res.status(201).json(student);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to add student" });
+    }
 });
 exports.addStudent = addStudent;
-try { }
-catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to add student" });
-}
-;
 const getstudentWithStudents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { studentId } = req.params;
     try {
