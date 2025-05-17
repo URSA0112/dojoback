@@ -18,21 +18,21 @@ enum UserRole {
   admin
 }
 
-// //Class = Анги , Group = Бүлэг
-// enum Class {
-//   one
-//   two
-//   three
-//   four
-//   five
-//   six
-//   seven
-//   eight
-//   nine
-//   ten
-//   eleven
-//   twelve
-// }
+//Grade = Анги , Group = Бүлэг
+enum GradeType {
+  one
+  two
+  three
+  four
+  five
+  six
+  seven
+  eight
+  nine
+  ten
+  eleven
+  twelve
+}
 
 model User {
   id        String   @id @default(cuid())
@@ -70,20 +70,19 @@ model Group {
 }
 
 model Teacher {
-  id        String @id @default(uuid())
+  id        String   @id @default(uuid())
   firstName String
   lastName  String
-  email     String @unique
-  password  String @default("teacher1234")
+  email     String   @unique
+  password  String?  @default("teacher1234")
+  subject   String[]
 
-  gradeId String?
-  grade   Grade?  @relation(fields: [gradeId], references: [id])
-
-  groupId String?
-  group   Group?  @relation(fields: [groupId], references: [id])
-
-  phoneNumber     String?
-  emergencyNumber String?
+  grade    String?
+  group    String?
+  groupId  String?
+  groupRef Group?  @relation(fields: [groupId], references: [id])
+  Grade    Grade?  @relation(fields: [gradeId], references: [id])
+  gradeId  String?
 }
 
 model Student {
