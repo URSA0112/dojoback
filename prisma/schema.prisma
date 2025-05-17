@@ -70,12 +70,13 @@ model Group {
 }
 
 model Teacher {
-  id        String   @id @default(uuid())
-  firstName String
-  lastName  String
-  email     String   @unique
-  password  String?  @default("teacher1234")
-  subject   String[]
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  password    String?  @default("teacher1234")
+  subject     String[]
+  phoneNumber String?
 
   emergencyNumber String?
   grade           String?
