@@ -77,12 +77,13 @@ model Teacher {
   password  String?  @default("teacher1234")
   subject   String[]
 
-  grade    String?
-  group    String?
-  groupId  String?
-  groupRef Group?  @relation(fields: [groupId], references: [id])
-  Grade    Grade?  @relation(fields: [gradeId], references: [id])
-  gradeId  String?
+  emergencyNumber String?
+  grade           String?
+  group           String?
+  groupId         String?
+  groupRef        Group?  @relation(fields: [groupId], references: [id])
+  Grade           Grade?  @relation(fields: [gradeId], references: [id])
+  gradeId         String?
 }
 
 model Student {
