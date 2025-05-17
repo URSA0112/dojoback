@@ -13,13 +13,10 @@ app.use(express.json());
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/teacher", teacherRoutes);
 
-
-//Энэ бол сервер ажиллаж байгаа эсэхийг шалгах тест 
 app.get("/", (req: Request, res: Response) => {
   try {
-    res.send("✅ Server running...")
-  }
-  catch (error) {
+    res.send("✅ Server running...");
+  } catch (error) {
     console.error("Error in root route:", error);
     res.status(500).json({ error: "Internal server error" });
   }

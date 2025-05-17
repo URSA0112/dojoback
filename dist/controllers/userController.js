@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllUsers = exports.checkUser = exports.createUser = void 0;
 const client_1 = __importDefault(require("../prisma/client"));
-// 📌 CREATE User
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password, role } = req.body;
@@ -24,7 +23,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(201).json(user);
     }
     catch (err) {
-        res.status(500).json({ error: "Failed to create userrrr" });
+        res.status(500).json({ error: "Failed to create user" });
     }
 });
 exports.createUser = createUser;
