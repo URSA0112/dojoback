@@ -13,8 +13,18 @@ export async function addTeacher(req: Request, res: Response) {
                 subject,
                 ...(grade && { grade }),   // ✅ зөвхөн байвал оруулна
                 ...(group && { group }),
-            },
+
+                user: {
+                    create: {             // ✅ user table руу оруулж байна
+                        email,
+                        password: "1234",
+                        role: "teacher",
+                    },
+                },
+            }
+
         });
+
 
         res.status(201).json({
             success: true,
