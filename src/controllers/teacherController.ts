@@ -11,8 +11,8 @@ export async function addTeacher(req: Request, res: Response) {
                 email,
                 phoneNumber,
                 subject,
-                ...(grade && { grade }),   // ✅ зөвхөн байвал оруулна
-                ...(group && { group }),
+                ...(grade && { gradeRef: { connect: { id: grade } } }),
+                ...(group && { groupRef: { connect: { id: group } } }),
 
                 user: {
                     create: {             // ✅ user table руу оруулж байна
@@ -24,7 +24,6 @@ export async function addTeacher(req: Request, res: Response) {
             }
 
         });
-
 
         res.status(201).json({
             success: true,
