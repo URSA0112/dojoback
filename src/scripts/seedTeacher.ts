@@ -49,7 +49,7 @@ async function createFakeTeacher() {
     console.log("Group ID:", group.id);
     console.log("Teacher ID:", teacher.id);
   } catch (error) {
-    console.error("❌ Failed to create fake teacher:", error);
+    console.log("❌ Failed to create fake teacher:", error);
   } finally {
     await prisma.$disconnect();
   }

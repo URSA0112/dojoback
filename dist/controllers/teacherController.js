@@ -15,12 +15,12 @@ async function addTeacher(req, res) {
                 email,
                 phoneNumber,
                 subject,
-                ...(grade && { grade }), // ✅ зөвхөн байвал оруулна
-                ...(group && { group }),
+                ...(grade && { gradeRef: { connect: { id: grade } } }),
+                ...(group && { groupRef: { connect: { id: group } } }),
                 user: {
                     create: {
                         email,
-                        password: "1234",
+                        password: "teacher1234",
                         role: "teacher",
                     },
                 },

@@ -1,39 +1,52 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express"
+import jwt from "jsonwebtoken";
 import prisma from "../prisma/client";
-
-export const createUser = async (req: Request, res: Response) => {
-  try {
-    const { email, password, role } = req.body;
-
-    const user = await prisma.user.create({
-      data: { email, password, role },
-    });
-    res.status(201).json(user);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to create user" });
-  }
-};
 
 // 📌 CHECK User (LOGIN)
 export const checkUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+
     const user = await prisma.user.findFirst({
       where: { email, password },
     });
-    if (user && user.role === "teacher") {
-      res.status(200).json({ message: "teacher" });
-    } else if (user && user.role === "student") {
-      res.status(200).json({ message: "student" });
-    } else if (user && user.role === "parent") {
-      res.status(200).json({ message: "parent" });
-    } else if (user && user.role === "admin") {
-      res.status(200).json({ message: "admin" });
-    } else {
-      res.status(401).json({ error: "Invalid credentials" });
+
+    if (!user) {
+      res.status(401).json({ error: "❌ Invalid credentials" });
+      return
     }
-  } catch (err) {
-    res.status(500).json({ error: "Failed to check user" });
+    
+    const payload = {
+      userId: user.id,
+      role: user.role,
+      id:
+        user.role === "teacher"
+          ? user.teacherId
+          : user.role === "student"
+            ? user.studentId
+            : user.role === "parent"
+              ? user.parentId
+              : undefined,
+    };
+
+    if (!payload.id) {
+      res.status(400).json({ error: "❌ Profile ID not linked for this user" });
+      return
+    }
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+      expiresIn: "2h",
+    });
+
+    res.status(200).json({
+      message: user.role,
+      token,
+      ...payload,
+    });
+
+  } catch (err: any) {
+    console.log("❌ Login error:", err.response.data);
+    res.status(500).json({ message: "❌ Failed to check user", error: err });
   }
 };
 
@@ -44,5 +57,18 @@ export const getAllUsers = async (req: Request, res: Response) => {
     res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch users" });
+  }
+};
+
+//Create User ➕
+export const createUser = async (req: Request, res: Response) => {
+  try {
+    const { email, password, role } = req.body
+    const user = await prisma.user.create({
+      data: { email, password, role },
+    });
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create user" });
   }
 };

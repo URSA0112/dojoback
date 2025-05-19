@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createGroup = void 0;
+exports.allGroups = exports.createGroup = void 0;
 const client_1 = __importDefault(require("../prisma/client"));
 const createGroup = async (req, res) => {
     try {
@@ -55,4 +55,19 @@ const createGroup = async (req, res) => {
     }
 };
 exports.createGroup = createGroup;
+const allGroups = async (req, res) => {
+    try {
+        const groups = await client_1.default.group.findMany({
+            include: {
+                grade: true,
+            },
+        });
+        res.status(200).json(groups);
+    }
+    catch (error) {
+        console.error("Error fetching groups:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+exports.allGroups = allGroups;
 //# sourceMappingURL=groupController.js.map

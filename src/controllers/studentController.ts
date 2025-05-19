@@ -1,48 +1,64 @@
 import { Request, Response } from "express";
 import prisma from "../prisma/client";
+import jwt from "jsonwebtoken";
 
-export const addStudent = async (req: Request, res: Response) => {
-  const {
-    teacherId,
-    firstName,
-    lastName,
-    email,
-    phoneNumber,
-    emergencyNumber,
-  } = req.body;
-
+export const addStudent = async (req: Request, res: Response): Promise<void> => {
   try {
-    const teacher = await prisma.teacher.findUnique({
-      where: { id: "52aca953-dd89-4650-90e0-ddda6711ef9b" },
-    });
-
-    if (!teacher || !teacher.groupId) {
-      res
-        .status(400)
-        .json({ error: "Teacher not found or not assigned to any grade" });
+    // ✅ 1. Check Authorization header ( check token, token = teacherId , GroupId )
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer")) {
+      res.status(401).json({
+        error: "❗ Token is missing. Please login and include the Authorization header like: Bearer <token>",
+      });
       return;
     }
 
-    const existingStudent = await prisma.student.findUnique({
-      where: { email },
+    // ✅ 2. Extract token
+    const token = authHeader.split(" ")[1];
+
+    // ✅ 3. Decode token
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET as string) as {
+      userId: string;
+      role: string;
+      id: string;
+      // ❗️ For type safety TS
+    };
+
+
+    // ✅ 4. Check user role
+    const user = await prisma.user.findUnique({
+      where: { id: decodedToken.userId },
     });
 
-    if (existingStudent) {
-      res.status(409).json({ error: "Student with this email already exists" });
+    if (!user || (user.role !== "teacher" && user.role !== "admin")) {
+      res.status(403).json({
+        error: "⛔ You are not authorized to add students",
+        message: "⛔ Зөвхөн багш эсвэл админ л сурагч нэмэх боломжтой."
+      });
       return;
     }
 
-    const student = await prisma.student.upsert({
-      where: { email },
-      update: {
-        firstName,
-        lastName,
-        phoneNumber,
-        emergencyNumber,
-        teacherId: teacher.id,
-        groupId: teacher.groupId,
-      },
-      create: {
+    const teacherId = decodedToken.id;
+    // 1. taking teacherId from token
+    const teacher = await prisma.teacher.findUnique({ where: { id: teacherId }, });
+    // 2. finding Teacher by teacherId for groupId
+    const groupId = teacher?.groupId;   //💎 Group 
+    const gradeId = teacher?.gradeId;   //💎 Grade (use in 👇🏻 add new student)
+    // 3. taking groupId from teacher table
+
+    // ✅ 5. Extract student data
+
+    const { firstName, lastName, email, phoneNumber, emergencyNumber } = req.body;
+    if (!teacher || !teacher.groupId || !teacher.gradeId) {
+      res.status(400).json({
+        error: "❗ Teacher is not assigned to a group, ",
+        message: "❗ Зөвхөн ангийн багш л сурагч нэмэх боломжтой. Та бүлэг болон ангид хамааралгүй байна."
+      });
+      return;
+    }
+
+    const newStudent = await prisma.student.create({
+      data: {
         firstName,
         lastName,
         email,
@@ -50,40 +66,41 @@ export const addStudent = async (req: Request, res: Response) => {
         emergencyNumber,
         teacherId: teacher.id,
         groupId: teacher.groupId,
+        gradeId: teacher.gradeId
       },
     });
 
-    res.status(201).json({ message: "✅ Student created", student });
-  } catch (error) {
-    console.error("❌ Failed to add student:", error);
-    res.status(500).json({ error: "Failed to add student" });
+    res.status(201).json({
+      message: `✅ New Student ${firstName} ${lastName} created`,
+      student: newStudent
+    }); return
+  } catch (error: any) {
+
+    console.log("❌ Error adding student:", error);
+    if (error.name === "JsonWebTokenError") {
+      res.status(401).json({ error: "Invalid token. Please login again." });
+    } else {
+      res.status(500).json({ error: "Failed to add student" });
+    }
   }
 };
 
-export const getTeacherWithStudents = async (req: Request, res: Response) => {
-  const { teacherId } = req.params;
-
+// 📌Get All Student 
+export const getAllStudents = async (req: Request, res: Response): Promise<void> => {
   try {
-    const teacher = await prisma.teacher.findUnique({
-      where: { id: teacherId },
-    });
-
-    if (!teacher || !teacher.groupId) {
-      res
-        .status(404)
-        .json({ error: "Teacher not found or not assigned to group" });
-      return;
-    }
-
     const students = await prisma.student.findMany({
-      where: {
-        groupId: teacher.groupId,
+      include: {
+        group: true,
+        grade: true,
+        teacher: true,
       },
     });
 
-    res.status(200).json({ teacher, students });
-  } catch (error) {
-    console.error("❌ Failed to fetch teacher and students:", error);
-    res.status(500).json({ error: "Failed to fetch teacher's students" });
+    console.log("📦 All students fetched:", students.length);
+
+    res.status(200).json({ students });
+  } catch (error: any) {
+    console.log("❌ Failed to fetch students:", error.message);
+    res.status(500).json({ error: "Сурагчдын мэдээллийг авахад алдаа гарлаа." });
   }
 };

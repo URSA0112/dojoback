@@ -17,7 +17,7 @@ export async function addTeacher(req: Request, res: Response) {
                 user: {
                     create: {             // ✅ user table руу оруулж байна
                         email,
-                        password: "1234",
+                        password: "teacher1234",
                         role: "teacher",
                     },
                 },
@@ -31,7 +31,7 @@ export async function addTeacher(req: Request, res: Response) {
             data: teacher
         });
     } catch (error: any) {
-        console.error("Add teacher error:", error);
+        console.log("Add teacher error:", error);
         res.status(500).json({ error: "Failed to add teacher", err: error.message });
     }
 }

@@ -18,8 +18,6 @@ enum UserRole {
   admin
 }
 
-//Grade = Анги , Group = Бүлэг
-
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -28,6 +26,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // 🧩 Хэрэглэгч нь зөвхөн нэг төрлийн role-той байна
   teacher   Teacher? @relation("TeacherUser", fields: [teacherId], references: [id])
   teacherId String?  @unique
 
@@ -52,19 +51,22 @@ model School {
 }
 
 model Grade {
-  id       String    @id @default(uuid())
-  number   Int?      @unique
+  id       String  @id @default(uuid())
+  number   Int     @unique
   groups   Group[]
   schoolId String?
-  school   School?   @relation(fields: [schoolId], references: [id])
+  school   School? @relation(fields: [schoolId], references: [id])
+
   teachers Teacher[]
+  students Student[] // 🧩 ангийн бүх сурагчидтай холбоо
 }
 
 model Group {
-  id       String    @id @default(uuid())
-  name     String
-  gradeId  String
-  grade    Grade     @relation(fields: [gradeId], references: [id])
+  id      String @id @default(uuid())
+  name    String
+  gradeId String
+  grade   Grade  @relation(fields: [gradeId], references: [id]) // 🧩 бүлэг нь нэг ангид хамаарна
+
   students Student[]
   teachers Teacher[]
 }
@@ -82,10 +84,11 @@ model Teacher {
   groupId String?
   gradeId String?
 
-  groupRef Group? @relation(fields: [groupId], references: [id])
-  gradeRef Grade? @relation(fields: [gradeId], references: [id])
+  groupRef Group? @relation(fields: [groupId], references: [id]) // 🧩 багш бүлэгт хамааралтай
+  gradeRef Grade? @relation(fields: [gradeId], references: [id]) // 🧩 багш ангид хамааралтай
 
-  user User? @relation("TeacherUser")
+  user    User?     @relation("TeacherUser")
+  Student Student[]
 }
 
 model Student {
@@ -95,12 +98,18 @@ model Student {
   email           String? @unique
   phoneNumber     String?
   emergencyNumber String?
-  teacherId       String?
-  groupId         String
-  parentId        String?
 
-  group      Group?       @relation(fields: [groupId], references: [id])
-  parent     Parent?      @relation(fields: [parentId], references: [id])
+  teacherId String?
+  groupId   String?
+  gradeId   String? // ✅ Нэмэгдсэн талбар — ангиа хадгалах
+
+  parentId String?
+
+  teacher Teacher? @relation(fields: [teacherId], references: [id]) // 🧩 багштай холбоотой
+  group   Group?   @relation(fields: [groupId], references: [id]) // 🧩 бүлэгтэй холбоотой
+  grade   Grade?   @relation(fields: [gradeId], references: [id]) // 🧩 анги мэдээлэл авахад хэрэгтэй
+  parent  Parent?  @relation(fields: [parentId], references: [id]) // 🧩 эцэг эхтэй холбоотой
+
   attendance Attendance[]
   scores     Score[]
 
@@ -108,12 +117,13 @@ model Student {
 }
 
 model Parent {
-  id        String    @id @default(uuid())
+  id        String @id @default(uuid())
   firstName String
   lastName  String
-  email     String    @unique
+  email     String @unique
   password  String
-  students  Student[]
+
+  students Student[] // 🧩 олон хүүхэдтэй холбоотой байж болно
 
   user User? @relation("ParentUser")
 }
@@ -123,7 +133,7 @@ model Attendance {
   date      DateTime
   present   Boolean
   studentId String
-  student   Student  @relation(fields: [studentId], references: [id])
+  student   Student  @relation(fields: [studentId], references: [id]) // 🧩 ирц бүртгэл сурагчид хамаарна
 }
 
 model Score {
@@ -133,5 +143,5 @@ model Score {
   attendance Float
   midterm    Float
   studentId  String
-  student    Student @relation(fields: [studentId], references: [id])
+  student    Student @relation(fields: [studentId], references: [id]) // 🧩 онооны бүртгэл сурагчид хамаарна
 }
