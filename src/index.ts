@@ -13,7 +13,7 @@ app.use(express.json());
 // app.use("/api/v1/student", studentRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/teacher", teacherRoutes);
-app.use("/api/v1", groupRoutes);;
+app.use("/api/v1/class", groupRoutes);;
 
 app.get("/", (req: Request, res: Response) => {
   try {

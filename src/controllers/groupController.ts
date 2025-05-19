@@ -57,3 +57,19 @@ export const createGroup = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const allGroups = async (req: Request, res: Response) => {
+    try {
+        const groups = await prisma.group.findMany({
+            include: {
+                grade: true,
+            },
+        });
+
+        res.status(200).json(groups);
+    } catch (error) {
+        console.error("Error fetching groups:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
