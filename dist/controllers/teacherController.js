@@ -33,7 +33,7 @@ async function addTeacher(req, res) {
         });
     }
     catch (error) {
-        console.error("Add teacher error:", error);
+        console.log("Add teacher error:", error);
         res.status(500).json({ error: "Failed to add teacher", err: error.message });
     }
 }

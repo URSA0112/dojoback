@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
         res.send("✅ Server running...");
     }
     catch (error) {
-        console.error("Error in root route:", error);
+        console.log("Error in root route:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });

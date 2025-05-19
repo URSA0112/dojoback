@@ -47,7 +47,7 @@ const createGroup = async (req, res) => {
         return;
     }
     catch (error) {
-        console.error("Error creating group:", error);
+        console.log("Error creating group:", error);
         res.status(500).json({
             error: "Серверийн алдаа.",
             details: error.message,
@@ -65,7 +65,7 @@ const allGroups = async (req, res) => {
         res.status(200).json(groups);
     }
     catch (error) {
-        console.error("Error fetching groups:", error);
+        console.log("Error fetching groups:", error);
         res.status(500).json({ error: "Server error" });
     }
 };
