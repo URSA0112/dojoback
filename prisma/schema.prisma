@@ -80,40 +80,33 @@ model Teacher {
   subject         String[]
   phoneNumber     String?
   emergencyNumber String?
-
-  groupId String?
-  gradeId String?
-
-  groupRef Group? @relation(fields: [groupId], references: [id]) // 🧩 багш бүлэгт хамааралтай
-  gradeRef Grade? @relation(fields: [gradeId], references: [id]) // 🧩 багш ангид хамааралтай
+  groupId         String?
+  gradeId         String?
+  groupRef        Group?   @relation(fields: [groupId], references: [id]) // 🧩 багш бүлэгт хамааралтай
+  gradeRef        Grade?   @relation(fields: [gradeId], references: [id]) // 🧩 багш ангид хамааралтай
 
   user    User?     @relation("TeacherUser")
   Student Student[]
 }
 
 model Student {
-  id              String  @id @default(uuid())
+  id              String       @id @default(uuid())
   firstName       String
   lastName        String
-  email           String? @unique
+  email           String?      @unique
   phoneNumber     String?
   emergencyNumber String?
-
-  teacherId String?
-  groupId   String?
-  gradeId   String? // ✅ Нэмэгдсэн талбар — ангиа хадгалах
-
-  parentId String?
-
-  teacher Teacher? @relation(fields: [teacherId], references: [id]) // 🧩 багштай холбоотой
-  group   Group?   @relation(fields: [groupId], references: [id]) // 🧩 бүлэгтэй холбоотой
-  grade   Grade?   @relation(fields: [gradeId], references: [id]) // 🧩 анги мэдээлэл авахад хэрэгтэй
-  parent  Parent?  @relation(fields: [parentId], references: [id]) // 🧩 эцэг эхтэй холбоотой
-
-  attendance Attendance[]
-  scores     Score[]
-
-  user User? @relation("StudentUser")
+  teacherId       String?
+  groupId         String?
+  gradeId         String? // ✅ Нэмэгдсэн талбар — ангиа хадгалах
+  parentId        String?
+  user            User?        @relation("StudentUser")
+  teacher         Teacher?     @relation(fields: [teacherId], references: [id]) // 🧩 багштай холбоотой
+  group           Group?       @relation(fields: [groupId], references: [id]) // 🧩 бүлэгтэй холбоотой
+  grade           Grade?       @relation(fields: [gradeId], references: [id]) // 🧩 анги мэдээлэл авахад хэрэгтэй
+  parent          Parent?      @relation(fields: [parentId], references: [id]) // 🧩 эцэг эхтэй холбоотой
+  attendance      Attendance[]
+  scores          Score[]
 }
 
 model Parent {
