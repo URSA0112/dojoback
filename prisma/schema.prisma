@@ -89,6 +89,11 @@ model Teacher {
   Student Student[]
 }
 
+enum Gender {
+  male
+  female
+}
+
 model Student {
   id              String       @id @default(uuid())
   firstName       String
@@ -100,6 +105,7 @@ model Student {
   groupId         String?
   gradeId         String? // ✅ Нэмэгдсэн талбар — ангиа хадгалах
   parentId        String?
+  gender          Gender       @default(male)
   user            User?        @relation("StudentUser")
   teacher         Teacher?     @relation(fields: [teacherId], references: [id]) // 🧩 багштай холбоотой
   group           Group?       @relation(fields: [groupId], references: [id]) // 🧩 бүлэгтэй холбоотой

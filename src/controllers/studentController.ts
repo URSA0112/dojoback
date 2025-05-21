@@ -7,7 +7,6 @@ export const addStudent = async (
   res: Response
 ): Promise<void> => {
   try {
-    // ✅ 1. Check Authorization header ( check token, token = teacherId , GroupId )
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer")) {
       res.status(401).json({
@@ -17,10 +16,8 @@ export const addStudent = async (
       return;
     }
 
-    // ✅ 2. Extract token
     const token = authHeader.split(" ")[1];
 
-    // ✅ 3. Decode token
     const decodedToken = jwt.verify(
       token,
       process.env.JWT_SECRET as string
@@ -28,10 +25,8 @@ export const addStudent = async (
       userId: string;
       role: string;
       id: string;
-      // ❗️ For type safety TS
     };
 
-    // ✅ 4. Check user role
     const user = await prisma.user.findUnique({
       where: { id: decodedToken.userId },
     });
@@ -45,7 +40,7 @@ export const addStudent = async (
     }
 
     const teacherId = decodedToken.id;
-    // 1. taking teacherId from token
+
     const teacher = await prisma.teacher.findUnique({
       where: { id: teacherId },
     });
@@ -56,8 +51,14 @@ export const addStudent = async (
 
     // ✅ 5. Extract student data
 
-    const { firstName, lastName, email, phoneNumber, emergencyNumber } =
+    const { firstName, lastName, email, phoneNumber, emergencyNumber, gender } =
       req.body;
+    console.log(req.body.gender);
+
+    if (!gender || !["male", "female"].includes(gender)) {
+      res.status(400).json({ error: "Invalid gender value" });
+      return;
+    }
     if (!teacher || !teacher.groupId || !teacher.gradeId) {
       res.status(400).json({
         error: "❗ Teacher is not assigned to a group, ",
@@ -74,6 +75,7 @@ export const addStudent = async (
         email,
         phoneNumber,
         emergencyNumber,
+        gender,
         teacherId: teacher.id,
         groupId: teacher.groupId,
         gradeId: teacher.gradeId,
