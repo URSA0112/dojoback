@@ -11,5 +11,7 @@ router.post("/login", checkUser);
 router.get("/users", getAllUsers)
 router.post("/testUser", instantCreateUser)
 router.get("/allTestUsers", getTestAllUsers);
-
+router.get("/ping", (req, res) => {
+    res.send("pong from /ping 🎯")
+})
 export default router;

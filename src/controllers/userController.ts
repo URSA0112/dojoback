@@ -192,12 +192,16 @@ export const instantCreateUser = async (req: Request, res: Response) => {
 // Send all test users
 export const getTestAllUsers = async (req: Request, res: Response) => {
   try {
+    console.log("📥 Incoming request to /allTestUsers")
+
     const testUsers = await prisma.testUser.findMany({
       include: {
         grade: true,
         group: true,
       },
     });
+
+    console.log("✅ Found testUsers:", testUsers.length)
 
     res.status(200).json(testUsers);
   } catch (err) {
