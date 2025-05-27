@@ -1,3 +1,4 @@
+import { TestUser } from './../../node_modules/.prisma/client/index.d';
 import { Request, response, Response } from "express"
 import jwt from "jsonwebtoken";
 import prisma from "../prisma/client";
@@ -15,7 +16,7 @@ export const checkUser = async (req: Request, res: Response) => {
       res.status(401).json({ error: "❌ Invalid credentials" });
       return
     }
-    
+
     const payload = {
       userId: user.id,
       role: user.role,
@@ -70,5 +71,97 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(201).json(user);
   } catch (err) {
     res.status(500).json({ error: "Failed to create user" });
+  }
+};
+
+//instant create user 4 button with role TESTUSER
+
+export const instantCreateUser = async (req: Request, res: Response) => {
+  console.log("📩 Received req.body:", req.body);
+
+  try {
+    const { id, email, fullName, avatarUrl, provider, role } = req.body;
+
+    if (!id || !email) {
+      res.status(400).json({ error: "❗ 'id' and 'email' are required." });
+      return
+    }
+
+    // 1️⃣ Find or create default Grade 10
+    let grade = await prisma.grade.findFirst({ where: { number: 10 } });
+
+    if (!grade) {
+      grade = await prisma.grade.create({
+        data: { number: 10 },
+      });
+      console.log("✅ Created default grade 10");
+    }
+
+    // 2️⃣ Find or create default Group B for Grade 10
+    let group = await prisma.group.findFirst({
+      where: { name: "B", gradeId: grade.id },
+    });
+
+    if (!group) {
+      group = await prisma.group.create({
+        data: {
+          name: "B",
+          gradeId: grade.id,
+        },
+      });
+      console.log("✅ Created group B under grade 10");
+    }
+
+    // 3️⃣ Upsert TestUser
+    const testUser = await prisma.testUser.upsert({
+      where: { id },
+      update: {
+        email,
+        fullName,
+        avatarUrl,
+        provider,
+        role,
+        gradeId: grade.id,
+        groupId: group.id,
+      },
+      create: {
+        id,
+        email,
+        fullName,
+        avatarUrl,
+        provider,
+        role,
+        gradeId: grade.id,
+        groupId: group.id,
+      },
+      include: {
+        grade: true,
+        group: true,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "✅ User created or updated successfully",
+      testUser: {
+        id: testUser.id,
+        email: testUser.email,
+        fullName: testUser.fullName,
+        avatarUrl: testUser.avatarUrl,
+        provider: testUser.provider,
+        role: testUser.role,
+        grade: testUser.grade?.number ?? null,
+        group: testUser.group?.name ?? null,
+        createdAt: testUser.createdAt,
+        updatedAt: testUser.updatedAt,
+      },
+    });
+  } catch (err) {
+    console.error("❌ Failed to create/update user:", err);
+    res.status(500).json({
+      success: false,
+      message: "🚨 Failed to create or update user",
+      error: err instanceof Error ? err.message : err,
+    });
   }
 };

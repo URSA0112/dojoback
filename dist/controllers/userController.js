@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = exports.getAllUsers = exports.checkUser = void 0;
+exports.instantCreateUser = exports.createUser = exports.getAllUsers = exports.checkUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const client_1 = __importDefault(require("../prisma/client"));
 // 📌 CHECK User (LOGIN)
@@ -72,4 +72,28 @@ const createUser = async (req, res) => {
     }
 };
 exports.createUser = createUser;
+//instant create user 4 button with role 
+const instantCreateUser = async (req, res) => {
+    try {
+        const { id, email, fullName, avatarUrl, provider, role } = req.body;
+        const testUser = await client_1.default.TestUser.create({
+            data: {
+                id,
+                email,
+                fullName,
+                avatarUrl,
+                provider,
+                role,
+            }
+        });
+        res.status(201).json({ success: true, message: "Test User successfully Created ✅", testUser });
+        return;
+    }
+    catch (err) {
+        console.error("Create user error:", err);
+        res.status(500).json({ error: "Failed to create user" });
+        return;
+    }
+};
+exports.instantCreateUser = instantCreateUser;
 //# sourceMappingURL=userController.js.map

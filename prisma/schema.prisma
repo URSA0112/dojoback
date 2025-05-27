@@ -19,16 +19,14 @@ enum UserRole {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  role      UserRole
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // 🧩 Хэрэглэгч нь зөвхөн нэг төрлийн role-той байна
-  teacher   Teacher? @relation("TeacherUser", fields: [teacherId], references: [id])
-  teacherId String?  @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String?
+  role      UserRole?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  teacher   Teacher?  @relation("TeacherUser", fields: [teacherId], references: [id])
+  teacherId String?   @unique
 
   student   Student? @relation("StudentUser", fields: [studentId], references: [id])
   studentId String?  @unique
@@ -39,6 +37,40 @@ model User {
   school   School? @relation("SchoolUser", fields: [schoolId], references: [id])
   schoolId String? @unique
 }
+
+model TestUser {
+  id        String  @id @default(cuid())
+  email     String?
+  fullName  String?
+  avatarUrl String?
+  provider  String?
+  role      String?
+
+  groupId String?
+  gradeId String?
+
+  group     Group?   @relation(fields: [groupId], references: [id])
+  grade     Grade?   @relation(fields: [gradeId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  content     String
+  sender_id   String
+  receiver_id String
+  created_at  DateTime @default(now())
+
+  sender   TestUser @relation("SentMessages", fields: [sender_id], references: [id])
+  receiver TestUser @relation("ReceivedMessages", fields: [receiver_id], references: [id])
+}
+
+// 🧩 Хэрэглэгч нь зөвхөн нэг төрлийн role-той байна
 
 model School {
   id        String   @id @default(uuid())
@@ -59,6 +91,7 @@ model Grade {
 
   teachers Teacher[]
   students Student[] // 🧩 ангийн бүх сурагчидтай холбоо
+  TestUser TestUser[]
 }
 
 model Group {
@@ -69,6 +102,7 @@ model Group {
 
   students Student[]
   teachers Teacher[]
+  TestUser TestUser[]
 }
 
 model Teacher {
