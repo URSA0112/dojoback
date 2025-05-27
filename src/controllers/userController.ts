@@ -187,3 +187,21 @@ export const instantCreateUser = async (req: Request, res: Response) => {
     return
   }
 }
+
+
+// Send all test users
+export const getTestAllUsers = async (req: Request, res: Response) => {
+  try {
+    const testUsers = await prisma.testUser.findMany({
+      include: {
+        grade: true,
+        group: true,
+      },
+    });
+
+    res.status(200).json(testUsers);
+  } catch (err) {
+    console.error("❌ Failed to fetch test users:", err);
+    res.status(500).json({ error: "Failed to fetch test users" });
+  }
+}
