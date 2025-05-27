@@ -105,11 +105,12 @@ export const instantCreateUser = async (req: Request, res: Response) => {
     }
 
     // 3️⃣ Check if user exists
-    const existingUser = await prisma.testUser.findUnique({ where: { id } })
+    const existingUser = await prisma.testUser.findUnique({
+      where: { id },
+    })
 
     if (existingUser) {
-      // 🔁 Update existing user
-      const testUser = await prisma.testUser.update({
+      const updated = await prisma.testUser.update({
         where: { id },
         data: {
           email,
@@ -120,34 +121,31 @@ export const instantCreateUser = async (req: Request, res: Response) => {
           gradeId: grade.id,
           groupId: group.id,
         },
-        include: {
-          grade: true,
-          group: true,
-        },
+        include: { grade: true, group: true },
       })
 
       res.status(200).json({
         success: true,
+        message: "🔁 Existing user updated",
         updated: true,
-        message: "🔁 Existing user updated successfully",
         testUser: {
-          id: testUser.id,
-          email: testUser.email,
-          fullName: testUser.fullName,
-          avatarUrl: testUser.avatarUrl,
-          provider: testUser.provider,
-          role: testUser.role,
-          grade: testUser.grade?.number ?? null,
-          group: testUser.group?.name ?? null,
-          createdAt: testUser.createdAt,
-          updatedAt: testUser.updatedAt,
+          id: updated.id,
+          email: updated.email,
+          fullName: updated.fullName,
+          avatarUrl: updated.avatarUrl,
+          provider: updated.provider,
+          role: updated.role,
+          grade: updated.grade?.number ?? null,
+          group: updated.group?.name ?? null,
+          createdAt: updated.createdAt,
+          updatedAt: updated.updatedAt,
         },
       })
       return
     }
 
-    // 🆕 Create new user
-    const testUser = await prisma.testUser.create({
+    // 4️⃣ Create new user
+    const created = await prisma.testUser.create({
       data: {
         id,
         email,
@@ -158,27 +156,24 @@ export const instantCreateUser = async (req: Request, res: Response) => {
         gradeId: grade.id,
         groupId: group.id,
       },
-      include: {
-        grade: true,
-        group: true,
-      },
+      include: { grade: true, group: true },
     })
 
     res.status(201).json({
       success: true,
+      message: "✅ New user created",
       created: true,
-      message: "✅ New user created successfully",
       testUser: {
-        id: testUser.id,
-        email: testUser.email,
-        fullName: testUser.fullName,
-        avatarUrl: testUser.avatarUrl,
-        provider: testUser.provider,
-        role: testUser.role,
-        grade: testUser.grade?.number ?? null,
-        group: testUser.group?.name ?? null,
-        createdAt: testUser.createdAt,
-        updatedAt: testUser.updatedAt,
+        id: created.id,
+        email: created.email,
+        fullName: created.fullName,
+        avatarUrl: created.avatarUrl,
+        provider: created.provider,
+        role: created.role,
+        grade: created.grade?.number ?? null,
+        group: created.group?.name ?? null,
+        createdAt: created.createdAt,
+        updatedAt: created.updatedAt,
       },
     })
     return
