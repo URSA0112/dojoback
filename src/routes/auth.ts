@@ -10,6 +10,6 @@ router.post("/register", createUser);
 router.post("/login", checkUser);
 router.get("/users", getAllUsers)
 router.post("/testUser", instantCreateUser)
-router.get("/testUser", getTestAllUsers);
+router.get("/allTestUsers", getTestAllUsers);
 
 export default router;
